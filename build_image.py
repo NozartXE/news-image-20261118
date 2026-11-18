@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
-"""Draw 'The Daily Edition — Wednesday 18 November 2026' (round 3).
+"""Draw 'The Daily Edition — Wednesday 18 November 2026' (round 4).
 
 A denser broadsheet front page that sums up the world news of
 Wednesday 18 November 2026 in one 1024x1024 image: the proven round-2
 form (masthead + full date, Gulf-escalation hero, three columns) plus
 a schematic world-map panel with story pins on six continents, an
-eight-number DAY IN NUMBERS strip and a sixteen-item wire band —
-28 distinct story items in total.  Every element is drawn
-deterministically with Pillow from the string constants below: no
-randomness, no network, no external assets beyond system fonts.
-Running this file rewrites entry.png next to it, byte for byte the
-same on every run.  All facts come from the verified lists in
-hidden_files/idea-funnel.md only.
+eight-number DAY IN NUMBERS strip and an eighteen-item wire band —
+30 distinct story items in total.  Round 4 completes the day: it adds
+the stories that landed after the morning build (the U.S. losing its
+measles elimination status, the market close and Nvidia's after-hours
+beat, Mongolia's president resigning) and updates the columns with the
+completed day's facts.  Every element is drawn deterministically with
+Pillow from the string constants below: no randomness, no network, no
+external assets beyond system fonts.  Running this file rewrites
+entry.png next to it, byte for byte the same on every run.  All facts
+come from the verified lists in hidden_files/idea-funnel.md and
+hidden_files/refresh-record.md only.
 """
 
 from pathlib import Path
@@ -224,12 +228,13 @@ CONTINENTS = [
 ]
 
 # Story locations pinned on the map: Gulf, Kerch, Manila, Congo,
-# Antalya, Cook Islands, Kemerovo, Alaska, Sudan, Yemen, Shenzhen, Gaza.
+# Antalya, Cook Islands, Kemerovo, Alaska, Sudan, Yemen, Shenzhen, Gaza,
+# Ulaanbaatar.
 # The four eastern-Mediterranean / Gulf pins are nudged a few degrees
 # apart so the cluster stays readable at this scale.
 PINS = [(58, 24), (36.5, 45), (121, 14.6), (25, -2), (29, 33),
         (-160, -21), (86, 55.4), (-150, 64), (30, 13), (45, 15),
-        (114, 22.5), (38, 28)]
+        (114, 22.5), (38, 28), (107, 47.9)]
 
 # Continent labels, placed on the sea beside each landmass so no pin
 # sits on a word; dark ink on the pale sea.
@@ -265,7 +270,7 @@ def map_panel(draw, x0, y0, x1, y1):
                      fill=PAPER)
         draw.ellipse([px - r, py - r, px + r, py + r], fill=ACCENT)
     cy = my0 + mh + 8
-    centred(draw, (x0 + x1) // 2, cy, "12 STORIES · 6 CONTINENTS",
+    centred(draw, (x0 + x1) // 2, cy, "13 STORIES · 6 CONTINENTS",
             font(SANS_BOLD, 10))
     centred(draw, (x0 + x1) // 2, cy + 16, "GULF · KERCH · MANILA",
             font(SANS_BOLD, 10))
@@ -332,14 +337,16 @@ def build():
 
     columns = [
         ("UKRAINE WAR", "KERCH BRIDGE HIT AGAIN — DAY 2", bridge_icon,
-         "Ukraine struck the Kerch Bridge for a second day; part of the road "
-         "span fell into the strait. Russia hit two bridges in return."),
+         "Ukraine struck the Kerch Bridge again; one of its two arches "
+         "collapsed into the strait. Russia hit two bridges in return."),
         ("ASIA TOUR", "TRUMP OPENS TOUR IN MANILA", plane_icon,
-         "Trump opened his Asia tour in Manila with the Philippines and Quad "
-         "partners, then China for a first trilateral with Xi and Putin."),
+         "Trump opened his Asia tour in Manila — Quad partners and a "
+         "Thailand trade deal. Putin has landed in Shenzhen: Thursday, "
+         "a first Trump–Xi–Putin trilateral."),
         ("HEALTH", "EBOLA CASES DOUBLE IN CONGO", virus_icon,
          "The Ebola outbreak in DR Congo has more than doubled in three "
-         "months: over 11,000 cases and 5,400 deaths (UN)."),
+         "months: over 11,000 cases and 5,400 deaths (UN), children "
+         "under five hit hardest."),
     ]
     for i, (kicker, head, icon, body) in enumerate(columns):
         cx = M + i * (col_w + col_gap)
@@ -361,7 +368,7 @@ def build():
         ("5", "tankers sunk"),
         ("6", "drones over Bahrain"),
         ("11,000", "Ebola cases"),
-        ("144", "COP31 items disputed"),
+        ("5,400", "U.S. measles cases"),
         ("19", "dead in Siberia crash"),
         ("2,230", "civilians killed, Sudan"),
         ("60", "Houthi targets hit"),
@@ -384,10 +391,11 @@ def build():
     d.rectangle([M, wy, R, H - 30], fill=NAVY)
     d.text((M + 16, wy + 9), "THE WIRE — AROUND THE WORLD IN A DAY",
            font=font(SANS_BOLD, 16), fill=(246, 240, 224))
-    right = "16 STORIES · 6 CONTINENTS"
+    right = "18 STORIES · 6 CONTINENTS"
     d.text((R - 16 - text_w(d, right, font(SANS_BOLD, 12)), wy + 12), right,
            font=font(SANS_BOLD, 12), fill=GOLD)
     wire = [
+        "MEASLES: U.S. loses elimination status after 26 years (PAHO)",
         "CYCLONE XAVIER: Cat 5 storm hits Northern Cook Islands",
         "COP31 ANTALYA: climate talks enter decisive phase, end Friday",
         "SIBERIA: Russian military plane crashes in Kemerovo, 19 dead",
@@ -395,21 +403,22 @@ def build():
         "ALASKA: Democrat Mary Peltola wins the state's Senate seat",
         "THE HAGUE: World Court to rule on Myanmar genocide case",
         "HOLLYWOOD: Robert Pattinson named the new James Bond",
-        "SHENZHEN: Trump heads to China for first trilateral with Xi, Putin",
+        "MARKETS: S&P 500 falls 1.03%, fourth down day; VIX at 25.46",
+        "NVIDIA: beats after the bell; $130bn guide lifts shares",
         "U.S. OUTAGES: Microsoft, FAA, JPMorgan Chase and NSA hit",
         "GAZA: Board of Peace warns the ceasefire may collapse",
         "WASHINGTON: Trump takes Iran dirty-bomb report seriously",
         "SUDAN: UN: 2,230 civilians killed in 2026, mostly by drones",
         "YEMEN: Saudi-led coalition hits 60 Houthi targets, incl. Sanaa",
+        "MONGOLIA: President to resign over $25m railway claims",
         "FLIGHTS: flydubai cancellations to Nov 27, Etihad to Nov 30",
-        "CARRIERS: USS Roosevelt and George Washington in Arabian Sea",
         "TEHRAN: Iran claims Hormuz hits; missiles at Al-Azraq, Jordan",
     ]
     cell_w = (R - M - 32) // 2
     for i, item in enumerate(wire):
         cx = M + 16 + (i % 2) * cell_w
-        cy = wy + 38 + (i // 2) * 16
-        d.rectangle([cx, cy + 4, cx + 7, cy + 11], fill=GOLD)
+        cy = wy + 34 + (i // 2) * 14
+        d.rectangle([cx, cy + 3, cx + 7, cy + 10], fill=GOLD)
         d.text((cx + 14, cy), item, font=font(SANS_BOLD, 12),
                fill=(240, 238, 228))
 
